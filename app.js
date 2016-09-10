@@ -9,12 +9,11 @@ app.use(methodOverride());
 
 
 app.get('/', function(req, res) {
-  res.send("Hello world!");
+	res.send("Hello world!");
 });
 
 routes = require('./routes/login')(app);
 
-
 app.listen(9090, function() {  
-  console.log("Node server running on http://localhost:9090");
+	console.log("Node server running on http://localhost:9090");
 });
