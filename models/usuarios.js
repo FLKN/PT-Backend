@@ -22,4 +22,14 @@ usuariosModel.getPassword = function(user_name,callback)
 	}
 }
  
+usuariosModel.existsUser = function(user_name,callback)
+{
+	var sql = 'SELECT user_name FROM usuarios WHERE EXISTS (SELECT 1 FROM usuarios WHERE user_name = ' + connection.escape(user_name) + ') ORDER BY user_name LIMIT 1';
+	if (connection) {
+		connection.query(sql, function(error, rows) {
+			if(error) { throw error; }
+			else { callback(null, rows); }
+		});
+	}
+}
 module.exports = usuariosModel;
