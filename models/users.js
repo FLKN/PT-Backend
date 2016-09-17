@@ -9,11 +9,16 @@ connection = mysql.createConnection(
 	port: 3306
 });
  
-var usuariosModel = {};
+var usersModel = {};
  
-usuariosModel.getPassword = function(user_name,callback)
+usersModel.getLoginInfo = function(user_name,callback)
 {
-	var sql = 'SELECT password FROM usuarios WHERE user_name = ' + connection.escape(user_name);
+	var sql = 
+	'SELECT usuarios.app_pass, huespeds.id_habitacion '+
+	'FROM usuarios '+
+	'INNER JOIN huespeds '+
+	'ON usuarios.id=huespeds.id_usuario '+
+	'WHERE usuarios.user_name =' + connection.escape(user_name);
 	if (connection) {
 		connection.query(sql, function(error, rows) {
 			if(error) { throw error; }
@@ -22,7 +27,7 @@ usuariosModel.getPassword = function(user_name,callback)
 	}
 }
  
-usuariosModel.existsUser = function(user_name,callback)
+usersModel.existsUser = function(user_name,callback)
 {
 	var sql = 'SELECT user_name FROM usuarios WHERE EXISTS (SELECT 1 FROM usuarios WHERE user_name = ' + connection.escape(user_name) + ') ORDER BY user_name LIMIT 1';
 	if (connection) {
@@ -32,4 +37,4 @@ usuariosModel.existsUser = function(user_name,callback)
 		});
 	}
 }
-module.exports = usuariosModel;
+module.exports = usersModel;
