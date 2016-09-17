@@ -22,6 +22,7 @@ module.exports = function(app)
             if(resp)
               res.send({
                 authorized : true,
+                name: data[0].id_nombre + " " + data[0].ap_pat + " " + data[0].ap_mat,
                 room :  data[0].id_habitacion,
                 msg : "Accesso Autorizado"
               });
