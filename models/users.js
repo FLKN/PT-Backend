@@ -14,7 +14,7 @@ var usersModel = {};
 usersModel.getLoginInfo = function(user_name,callback)
 {
 	var sql = 
-	'SELECT usuarios.app_pass, huespeds.nombre, huespeds.ap_pat, huespeds.ap_mat, huespeds.id_habitacion '+
+	'SELECT usuarios.app_pass, usuarios.nivel, huespeds.nombre, huespeds.ap_pat, huespeds.ap_mat, huespeds.id_habitacion '+
 	'FROM usuarios '+
 	'INNER JOIN huespeds '+
 	'ON usuarios.id=huespeds.id_usuario '+
