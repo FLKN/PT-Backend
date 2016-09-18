@@ -43,23 +43,27 @@ module.exports = function(app)
   });
 
   app.post("/sensors/update_lock",function(req, res){
-    var lumen = req.body.lumen;
+    var lock_state = req.body.lock_state;
     var room = req.body.room;
     
-    Sensor.getLightID(room,function(error,data) {
+    Sensor.getLockID(room,function(error,data) {
       if (data.length == 0)
         res.send({
           action : false, 
           msg : "Cuarto incorrecto"
         });
       else{
-        Sensor.updateLightLumen(data[0].id,lumen,function(error,data){});
+        Sensor.updateLockState(data[0].id,lock_state,function(error,data){});
 
         // Analizar estadisticas
 
+        if (lock_state == 1)
+          var msg = "Puerta Abierta";
+        else
+          var msg = "Puerta Cerrada";
         res.send({
           action : true, 
-          msg : "Acción realizada"
+          msg : msg
         });
       }
     });
