@@ -10,7 +10,7 @@ connection = mysql.createConnection(
 });
  
 var sensorsModel = {};
- 
+//Modelos para Luces
 sensorsModel.updateLightState = function(state,room,callback)
 {
 	var sql = "UPDATE sensors SET estado = "+ connection.escape(state) +" WHERE id_habitacion = " + connection.escape(room);
@@ -57,6 +57,22 @@ sensorsModel.getLightLumen = function(room,callback)
 	}
 }
 
+//Modelos para Cerradura
+sensorsModel.getLockState = function(room,callback)
+{
+	var sql = 
+		"SELECT sensor_cerraduras.estado_cerradura " +
+		"FROM sensor_cerraduras " +
+		"INNER JOIN sensors " +
+		"ON sensors.id = sensor_cerraduras.id_sensor " +
+		"WHERE sensors.id_habitacion = " + connection.escape(room);
+	if (connection) {
+		connection.query(sql, function(error, rows) {
+			if(error) { throw error; }
+			else { callback(null, rows); }
+		});
+	}
+}
 
 	
  
