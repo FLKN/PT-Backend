@@ -2,6 +2,7 @@ var Sensor = require('../models/sensors');
 
 module.exports = function(app)
 {
+  // Light logic
   app.post("/sensors/update_light",function(req, res){
     var lumen = req.body.lumen;
     var room = req.body.room;
@@ -14,8 +15,6 @@ module.exports = function(app)
         });
       else{
         Sensor.updateLightLumen(data[0].id,lumen,function(error,data){});
-
-        // Analizar estadisticas
 
         res.send({
           action : true, 
@@ -42,6 +41,7 @@ module.exports = function(app)
     });
   });
 
+  // Lock logic
   app.post("/sensors/update_lock",function(req, res){
     var lock_state = req.body.lock_state;
     var room = req.body.room;
@@ -54,8 +54,6 @@ module.exports = function(app)
         });
       else{
         Sensor.updateLockState(data[0].id,lock_state,function(error,data){});
-
-        // Analizar estadisticas
 
         if (lock_state == 1)
           var msg = "Puerta Abierta";
@@ -90,4 +88,65 @@ module.exports = function(app)
       }
     });
   });
+
+  // Access logic
+  app.post("/sensors/get_access",function(req, res){
+    var room = req.body.room;
+    Sensor.getAccessState(room,function(error,data) {
+      if (data.length == 0)
+        res.send({
+          action : false, 
+          msg : "Cuarto incorrecto"
+        });
+      else{
+        res.send({
+          action : true, 
+          states : JSON.stringify(data),
+          msg : "Acción realizada"
+        });
+      }
+    });
+  });
+
+  // Air logic
+  app.post("/sensors/update_air",function(req, res){
+    var intensity = req.body.intensity;
+    var temperature = req.body.temperature;
+    var room = req.body.room;
+    
+    Sensor.getAirID(room,function(error,data) {
+      if (data.length == 0)
+        res.send({
+          action : false, 
+          msg : "Cuarto incorrecto"
+        });
+      else{
+        Sensor.updateAirData(data[0].id,temperature,intensity,function(error,data){});
+
+        res.send({
+          action : true, 
+          msg : "Acción completa"
+        });
+      }
+    });
+  });
+  app.post("/sensors/get_air",function(req, res){
+    var room = req.body.room;
+    Sensor.getAirData(room,function(error,data) {
+      if (data.length == 0)
+        res.send({
+          action : false, 
+          msg : "Cuarto incorrecto"
+        });
+      else{
+        res.send({
+          action : true, 
+          temperature : data[0].temperatura,
+          intensity : data[0].intensidad,
+          msg : "Acción realizada"
+        });
+      }
+    });
+  });
+
 }

@@ -11,16 +11,6 @@ connection = mysql.createConnection(
  
 var sensorsModel = {};
 //Modelos para Luces
-sensorsModel.updateLightState = function(state,room,callback)
-{
-	var sql = "UPDATE sensors SET estado = "+ connection.escape(state) +" WHERE id_habitacion = " + connection.escape(room);
-	if (connection) {
-		connection.query(sql, function(error, rows) {
-			if(error) { throw error; }
-			else { callback(null, rows); }
-		});
-	}
-}
 sensorsModel.updateLightLumen = function(id,lumen,callback)
 {
 	var sql = "UPDATE sensor_luzs SET lumen = "+ connection.escape(lumen) +" WHERE id_sensor = " + connection.escape(id);
@@ -103,7 +93,93 @@ sensorsModel.updateLockState = function(id,lock_state,callback)
 		});
 	}
 }
-	
+
+//Modelos para Acceso
+sensorsModel.getAccessState = function(room,callback)
+{
+	var sql = 
+		"SELECT sensor_accesos.estado_magnetico " +
+		"FROM sensor_accesos " +
+		"INNER JOIN sensors " +
+		"ON sensors.id = sensor_accesos.id_sensor " +
+		"WHERE sensors.id_habitacion = " + connection.escape(room);
+	if (connection) {
+		connection.query(sql, function(error, rows) {
+			if(error) { throw error; }
+			else { callback(null, rows); }
+		});
+	}
+}
+sensorsModel.getAccessID = function(room,callback)
+{
+	var sql = 
+		"SELECT sensors.id " +
+		"FROM sensor_accesos " +
+		"INNER JOIN sensors " +
+		"ON sensors.id = sensor_accesos.id_sensor " +
+		"WHERE sensors.id_habitacion = " + connection.escape(room);
+	if (connection) {
+		connection.query(sql, function(error, rows) {
+			if(error) { throw error; }
+			else { callback(null, rows); }
+		});
+	}
+}
+sensorsModel.updateAccessState = function(id,accsess_state,callback)
+{
+	var sql = "UPDATE sensor_accesos SET estado_magnetico = "+ connection.escape(lock_state) +" WHERE id_sensor = " + connection.escape(id);
+	if (connection) {
+		connection.query(sql, function(error, rows) {
+			if(error) { throw error; }
+			else { callback(null, rows); }
+		});
+	}
+}
  
+//Modelos para Ventilacion
+sensorsModel.getAirData = function(room,callback)
+{
+	var sql = 
+		"SELECT sensor_ventilacions.temperatura, sensor_ventilacions.intensidad " +
+		"FROM sensor_ventilacions " +
+		"INNER JOIN sensors " +
+		"ON sensors.id = sensor_ventilacions.id_sensor " +
+		"WHERE sensors.id_habitacion = " + connection.escape(room);
+	if (connection) {
+		connection.query(sql, function(error, rows) {
+			if(error) { throw error; }
+			else { callback(null, rows); }
+		});
+	}
+}
+sensorsModel.getAirID = function(room,callback)
+{
+	var sql = 
+		"SELECT sensors.id " +
+		"FROM sensor_ventilacions " +
+		"INNER JOIN sensors " +
+		"ON sensors.id = sensor_ventilacions.id_sensor " +
+		"WHERE sensors.id_habitacion = " + connection.escape(room);
+	if (connection) {
+		connection.query(sql, function(error, rows) {
+			if(error) { throw error; }
+			else { callback(null, rows); }
+		});
+	}
+}
+sensorsModel.updateAirData = function(id,temperature,intensity,callback)
+{
+	var sql = 
+		"UPDATE sensor_ventilacions " +
+		"SET temperatura = "+  connection.escape(temperature) + ", " +
+		"intensidad = "+  connection.escape(intensity) +
+		" WHERE id_sensor = " + connection.escape(id);
+	if (connection) {
+		connection.query(sql, function(error, rows) {
+			if(error) { throw error; }
+			else { callback(null, rows); }
+		});
+	}
+}
 
 module.exports = sensorsModel;
