@@ -14,6 +14,7 @@ app.get('/', function(req, res) {
 
 routes = require('./routes/login')(app);
 routes = require('./routes/automation')(app);
+routes = require('./routes/room_service')(app);
 
 app.listen(9090, function() {  
 	console.log("Node server running on http://localhost:9090");
