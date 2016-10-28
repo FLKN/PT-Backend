@@ -1,5 +1,33 @@
 var Sensor = require('../models/sensors');
 
+var Client = require('azure-iothub').Client;
+var Message = require('azure-iot-common').Message;
+
+var connectionString = 'HostName=PT-IoTHub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=iRnHJOgPNG9Sq7yWbdRk3F0wYKyR2g14CWq3liG0aVs=';
+var targetDevice = 'PT-raspberry_device';
+
+var serviceClient = Client.fromConnectionString(connectionString);
+
+function printResultFor(op) {
+  return function printResult(err, res) {
+    if (err) console.log(op + ' error: ' + err.toString());
+    if (res) console.log(op + ' status: ' + res.constructor.name);
+  };
+}
+
+function sendC2Dmessage(toRaspData) {
+  serviceClient.open(function (err) {
+    if (err) {
+      console.error('IoT Hub Could not connect: ' + err.message);
+    } else {
+      var message = new Message(JSON.stringify(toRaspData));
+
+      serviceClient.send(targetDevice, message, printResultFor('send'));
+    }
+  });
+}
+
+
 module.exports = function(app)
 {
   // Light logic
@@ -7,7 +35,7 @@ module.exports = function(app)
     var lumen = req.body.lumen;
     var room = req.body.room;
     
-    Sensor.getLightID(room,function(error,data) {
+    /*Sensor.getLightID(room,function(error,data) {
       if (data.length == 0)
         res.send({
           action : false, 
@@ -15,15 +43,23 @@ module.exports = function(app)
         });
       else{
         Sensor.updateLightLumen(data[0].id,lumen,function(error,data){});
+    */    
+        var toRaspData = {
+          action: 'update_light', 
+          value: lumen
+        };
+
+        sendC2Dmessage(toRaspData);
 
         res.send({
           action : true, 
           msg : "Acción realizada"
         });
-      }
-    });
+      /*}
+    });*/
   });
   app.post("/sensors/get_light",function(req, res){
+
     var room = req.body.room;
     Sensor.getLightLumen(room,function(error,data) {
       if (data.length == 0)
@@ -54,6 +90,13 @@ module.exports = function(app)
         });
       else{
         Sensor.updateLockState(data[0].id,lock_state,function(error,data){});
+
+        var toRaspData = {
+          action: 'update_lock',
+          value: lock_state
+        };
+
+        sendC2Dmessage(toRaspData);
 
         if (lock_state == 1)
           var msg = "Puerta Abierta";
@@ -91,6 +134,9 @@ module.exports = function(app)
 
   // Access logic
   app.post("/sensors/get_access",function(req, res){
+
+    // Send C2D message looking for access info in the network
+
     var room = req.body.room;
     Sensor.getAccessState(room,function(error,data) {
       if (data.length == 0)
@@ -113,6 +159,9 @@ module.exports = function(app)
     var intensity = req.body.intensity;
     var temperature = req.body.temperature;
     var room = req.body.room;
+
+    // Send C2D message looking for curretn temperature
+
     
     Sensor.getAirID(room,function(error,data) {
       if (data.length == 0)
@@ -123,6 +172,13 @@ module.exports = function(app)
       else{
         Sensor.updateAirData(data[0].id,temperature,intensity,function(error,data){});
 
+        var toRaspData = {
+          action: 'update_air',
+          value: intensity
+        };
+
+        sendC2Dmessage(toRaspData);
+        
         res.send({
           action : true, 
           msg : "Acción completa"
@@ -148,5 +204,4 @@ module.exports = function(app)
       }
     });
   });
-
 }
