@@ -2,9 +2,9 @@ var mysql = require('mysql'),
 
 connection = mysql.createConnection(
 { 
-	host: 'ptserver.southcentralus.cloudapp.azure.com',
-	user: 'pt_user',
-	password: 'qazwsxer',
+	host: 'us-cdbr-azure-southcentral-f.cloudapp.net',
+	user: 'b77bca855ed18d',
+	password: '595352af',
 	database: 'pt_db',
 	port: 3306
 });
