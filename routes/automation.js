@@ -2,6 +2,7 @@ var Sensor = require('../models/sensors');
 
 var Client = require('azure-iothub').Client;
 var Message = require('azure-iot-common').Message;
+var EventHubClient = require('azure-event-hubs').Client;
 
 var connectionString = 'HostName=PT-IoTHub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=iRnHJOgPNG9Sq7yWbdRk3F0wYKyR2g14CWq3liG0aVs=';
 var targetDevice = 'PT-raspberry_device';
@@ -14,14 +15,64 @@ function printResultFor(op) {
     if (res) console.log(op + ' status: ' + res.constructor.name);
   };
 }
+var printError = function (err) {
+   console.log(err.message);
+ };
+
+var printMessage = function (message) {
+  console.log('Message received: ');
+  var msg = decodeURIComponent(escape(message.body));
+  console.log(msg);
+
+  //Process message
+
+  //Make conditions to store in db
+  /* (action == "get_light"){
+
+  } else if (action == "update_light"){
+
+  } else if (action == "get_light"){
+    
+  } else if (action == "get_light"){
+    
+  } else if (action == "get_light"){
+    
+  } else if (action == "get_light"){
+    
+  }*/
+
+
+};
+
+var client = EventHubClient.fromConnectionString(connectionString);
+client.open()
+  .then(client.getPartitionIds.bind(client))
+  .then(function (partitionIds) {
+    return partitionIds.map(function (partitionId) {
+      return client.createReceiver('$Default', partitionId, { 'startAfterTime' : Date.now()}).then(function(receiver) {
+        console.log('Created partition receiver: ' + partitionId)
+        receiver.on('errorReceived', printError);
+        receiver.on('message', printMessage);
+      });
+    });
+  })
+  .catch(printError);
 
 function sendC2Dmessage(toRaspData) {
   serviceClient.open(function (err) {
     if (err) {
       console.error('IoT Hub Could not connect: ' + err.message);
     } else {
+      serviceClient.getFeedbackReceiver(function(err, receiver){
+       receiver.on('message', function (msg) {
+         console.log('Feedback message:')
+         console.log(msg.getData().toString('utf-8'));
+       });
+      });
       var message = new Message(JSON.stringify(toRaspData));
-
+      message.ack = 'full';
+      message.messageId = "My Message ID";
+      console.log('Sending message: ' + message.getData());
       serviceClient.send(targetDevice, message, printResultFor('send'));
     }
   });
@@ -34,29 +85,13 @@ module.exports = function(app)
   app.post("/sensors/update_light",function(req, res){
     var lumen = req.body.lumen;
     var room = req.body.room;
-    
-    /*Sensor.getLightID(room,function(error,data) {
-      if (data.length == 0)
-        res.send({
-          action : false, 
-          msg : "Cuarto incorrecto"
-        });
-      else{
-        Sensor.updateLightLumen(data[0].id,lumen,function(error,data){});
-    */    
-        var toRaspData = {
-          action: 'update_light', 
-          value: lumen
-        };
 
-        sendC2Dmessage(toRaspData);
+    var toRaspData = {
+      action: 'update_light', 
+      value: lumen
+    };
 
-        res.send({
-          action : true, 
-          msg : "Acción realizada"
-        });
-      /*}
-    });*/
+    sendC2Dmessage(toRaspData);
   });
   app.post("/sensors/get_light",function(req, res){
 
