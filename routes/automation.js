@@ -15,34 +15,6 @@ function printResultFor(op) {
     if (res) console.log(op + ' status: ' + res.constructor.name);
   };
 }
-var printError = function (err) {
-   console.log(err.message);
- };
-
-var printMessage = function (message) {
-  console.log('Message received: ');
-  var msg = decodeURIComponent(escape(message.body));
-  console.log(msg);
-
-  //Process message
-
-  //Make conditions to store in db
-  /* (action == "get_light"){
-
-  } else if (action == "update_light"){
-
-  } else if (action == "get_light"){
-    
-  } else if (action == "get_light"){
-    
-  } else if (action == "get_light"){
-    
-  } else if (action == "get_light"){
-    
-  }*/
-
-
-};
 
 var client = EventHubClient.fromConnectionString(connectionString);
 client.open()
@@ -51,12 +23,51 @@ client.open()
     return partitionIds.map(function (partitionId) {
       return client.createReceiver('$Default', partitionId, { 'startAfterTime' : Date.now()}).then(function(receiver) {
         console.log('Created partition receiver: ' + partitionId)
-        receiver.on('errorReceived', printError);
-        receiver.on('message', printMessage);
+        receiver.on('errorReceived', function (err) {
+            console.log(err.message);
+        });
+        receiver.on('message', processMessage);
       });
     });
   })
-  .catch(printError);
+  .catch(function (err) {
+    console.log(err.message);
+  });
+
+var processMessage = function (message) {
+  console.log('Message received: ');
+  var msg = JSON.stringify(decodeURIComponent(escape(message.body)));
+  var data = msg.substring(1,msg.length-1).split(",");
+
+  var action = data[0];
+  var room = data[1];
+  var value = data[2];
+
+  console.log(data);
+
+  if (action == "get_light"){
+
+  } else if (action == "update_light"){
+    /*Sensor.getLightID(room,function(error,db_data) {
+      if (db_data.length == 0)
+        res.send({
+            action : false, 
+            msg : "Cuarto incorrecto"
+        });
+      else{
+        Sensor.updateLightLumen(db_data[0].id,value,function(error,data){});
+        res.send({
+          action : true, 
+          msg : "Acción realizada"
+        });
+      }
+    });*/
+  } else if (action == "get_lock"){
+    
+  } 
+
+
+}
 
 function sendC2Dmessage(toRaspData) {
   serviceClient.open(function (err) {
@@ -88,11 +99,20 @@ module.exports = function(app)
 
     var toRaspData = {
       action: 'update_light', 
-      value: lumen
+      value: lumen,
+      room: room
     };
 
     sendC2Dmessage(toRaspData);
+
+    res.send({
+      action : true, 
+      msg : "Acción realizada"
+    });
+
+    
   });
+
   app.post("/sensors/get_light",function(req, res){
 
     var room = req.body.room;
@@ -196,8 +216,7 @@ module.exports = function(app)
     var room = req.body.room;
 
     // Send C2D message looking for curretn temperature
-
-    
+   
     Sensor.getAirID(room,function(error,data) {
       if (data.length == 0)
         res.send({
