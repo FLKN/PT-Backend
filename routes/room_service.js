@@ -13,7 +13,7 @@ module.exports = function(app)
 	      	else{
 				res.send({
 					action : true, 
-					dishes : JSON.stringify(data),
+					dishes : data,
 					msg : "Acción realizada"
 				});
 			}
