@@ -23,7 +23,6 @@ module.exports = function(app) {
             room: room
         };
         IoT.sendC2Dmessage(1, toRaspData, res);
-
     });
 
     // Lock logic
@@ -45,27 +44,6 @@ module.exports = function(app) {
             room: room
         };
         IoT.sendC2Dmessage(1, toRaspData, res);
-
-
-        Sensor.getLockState(room, function(error, data) {
-            if (data.length == 0)
-                res.send({
-                    action: false,
-                    msg: "Cuarto incorrecto"
-                });
-            else {
-                if (data[0].estado_cerradura == 1)
-                    var msg = "Puerta Abierta";
-                else
-                    var msg = "Puerta Cerrada";
-
-                res.send({
-                    action: true,
-                    lock_state: data[0].estado_cerradura,
-                    msg: msg
-                });
-            }
-        });
     });
 
     // Access logic

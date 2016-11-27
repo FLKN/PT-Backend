@@ -32,7 +32,7 @@ sensorsModel.getLightID = function(room, callback) {
 }
 sensorsModel.getLightLumen = function(room, callback) {
     var sql =
-        "SELECT sensor_luzs.lumen " +
+        "SELECT sensor_luzs.lumen, sensor_luzs.preset" +
         "FROM sensor_luzs " +
         "INNER JOIN sensors " +
         "ON sensors.id = sensor_luzs.id_sensor " +
@@ -47,7 +47,7 @@ sensorsModel.getLightLumen = function(room, callback) {
 //Modelos para Cerradura
 sensorsModel.getLockState = function(room, callback) {
     var sql =
-        "SELECT sensor_cerraduras.estado_cerradura " +
+        "SELECT sensor_cerraduras.estado " +
         "FROM sensor_cerraduras " +
         "INNER JOIN sensors " +
         "ON sensors.id = sensor_cerraduras.id_sensor " +
@@ -72,7 +72,7 @@ sensorsModel.getLockID = function(room, callback) {
     }
 }
 sensorsModel.updateLockState = function(id, lock_state, callback) {
-    var sql = "UPDATE sensor_cerraduras SET estado_cerradura = " + connection.escape(lock_state) + " WHERE id_sensor = " + connection.escape(id);
+    var sql = "UPDATE sensor_cerraduras SET estado = " + connection.escape(lock_state) + " WHERE id_sensor = " + connection.escape(id);
     if (connection) {
         connection.query(sql, function(error, rows) {
             if (error) { throw error; } else { callback(null, rows); }

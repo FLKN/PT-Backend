@@ -48,6 +48,18 @@ var automationMessage = function(message) {
     var value = data[2];
 
     if (action == "get_light") {
+
+        Sensor.getLightID(room, function(error, data) {
+            if (data.length == 0)
+                response.send({
+                    action: false,
+                    msg: "Cuarto incorrecto"
+                });
+            else {
+                Sensor.updateLightLumen(data[0].id, value, function(error, data) {});
+            }
+        });
+
         Sensor.getLightLumen(room, function(error, data) {
             if (data.length == 0)
                 response.send({
@@ -57,6 +69,7 @@ var automationMessage = function(message) {
             else {
                 response.send({
                     action: true,
+                    preset: data[0].preset,
                     lumen: data[0].lumen,
                     msg: "Acción realizada"
                 });
@@ -71,7 +84,6 @@ var automationMessage = function(message) {
                 });
             else {
                 Sensor.updateLightLumen(data[0].id, value, function(error, data) {});
-                //console.log(data[0].id);
                 response.send({
                     action: true,
                     msg: "Acción realizada"
@@ -79,7 +91,25 @@ var automationMessage = function(message) {
             }
         });
     } else if (action == "get_lock") {
+        /*Sensor.getLockState(room, function(error, data) {
+            if (data.length == 0)
+                response.send({
+                    action: false,
+                    msg: "Cuarto incorrecto"
+                });
+            else {
+                if (data[0].estado_cerradura == 1)
+                    var msg = "Puerta Abierta";
+                else
+                    var msg = "Puerta Cerrada";
 
+                response.send({
+                    action: true,
+                    lock_state: data[0].estado_cerradura,
+                    msg: msg
+                });
+            }
+        });*/
     } else if (action == "update_lock") {
         Sensor.getLockID(room, function(error, data) {
             if (data.length == 0)
