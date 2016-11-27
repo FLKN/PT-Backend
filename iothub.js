@@ -4,7 +4,7 @@ var Client = require('azure-iothub').Client;
 var Message = require('azure-iot-common').Message;
 var EventHubClient = require('azure-event-hubs').Client;
 
-var connectionString = 'HostName=PT-IoTHub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=iRnHJOgPNG9Sq7yWbdRk3F0wYKyR2g14CWq3liG0aVs=';
+var connectionString = 'HostName=pt-iot.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=F+MKqg0vGBmh2d7M2cbPOYXtdMKCGC+nMfYVzmFxKfU=';
 var targetDevice = 'PT-raspberry_device';
 
 var serviceClient = Client.fromConnectionString(connectionString);
@@ -48,8 +48,11 @@ var automationMessage = function(message) {
     var value = data[2];
 
     if (action == "get_light") {
-
-        Sensor.getLightID(room, function(error, data) {
+        response.send({
+            action: false,
+            msg: "Cuarto incorrecto"
+        });
+        /*Sensor.getLightID(room, function(error, data) {
             if (data.length == 0)
                 response.send({
                     action: false,
@@ -74,7 +77,7 @@ var automationMessage = function(message) {
                     msg: "Acción realizada"
                 });
             }
-        });
+        });*/
     } else if (action == "update_light") {
         Sensor.getLightID(room, function(error, data) {
             if (data.length == 0)

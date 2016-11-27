@@ -18,8 +18,10 @@ module.exports = function(app) {
 
     app.post("/sensors/get_light", function(req, res) {
         var room = req.body.room;
+        var lumen = req.body.lumen;
         var toRaspData = {
             action: 'get_light',
+            value: lumen,
             room: room
         };
         IoT.sendC2Dmessage(1, toRaspData, res);
