@@ -14,6 +14,7 @@ module.exports = function(app) {
                 for (var i = 0; i < data.length; i++) {
                     dishes.push("{ id: '" + data[i].id + "'" +
                         ",nombre:'" + data[i].nombre + "'" +
+                        ",descripcion:'" + data[i].descripcion + "'" +
                         ",precio:'" + data[i].precio + "'" +
                         //",imagen: " + data[i].imagen +
                         " }");
