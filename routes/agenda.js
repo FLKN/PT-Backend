@@ -15,7 +15,23 @@ module.exports = function(app) {
                     msg: "Cuarto incorrecto"
                 });
             else {
-                var maps_aux;
+                var events = [];
+                for (var i = 0; i < data.length; i++) {
+                    events.push("{ id: '" + data[i].id + "'" +
+                        ",nombre:'" + data[i].nombre + "'" +
+                        ",ubicacion:'" + data[i].ubicacion + "'" +
+                        ",descripcion:'" + data[i].descripcion + "'" +
+                        //",imagen: " + data[i].imagen +
+                        " }");
+                }
+
+                res.send({
+                    action: true,
+                    events: JSON.stringify(events),
+                    msg: "Acción realizada"
+                });
+
+                /*var maps_aux;
                 var directions = [];
                 for (var i = 0; i < data.length; i++) {
                     maps_aux += data[i].ubicacion + "|";
@@ -37,14 +53,14 @@ module.exports = function(app) {
 							maps_durations.push(parseInt(maps_data[i].duration));
 						}
 						maps_durations.sort(function(a,b) { return a - b; });
-						*/
+						
                         res.send({
                             action: true,
                             //dishes : JSON.parse(maps_durations),
                             dishes: "JSON.parse(maps_durations)",
                             msg: "Acción realizada"
                         });
-                    });
+                    });*/
             }
         });
     });

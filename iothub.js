@@ -41,17 +41,16 @@ var automationMessage = function(message) {
     var msg = JSON.stringify(decodeURIComponent(escape(message.body)));
     var data = msg.substring(1, msg.length - 1).split(",");
 
-    console.log(data);
-
     var action = data[0];
     var room = data[1];
     var value = data[2];
 
     if (action == "get_light") {
-        response.send({
+        console.log(data);
+        /*response.send({
             action: false,
             msg: "Cuarto incorrecto"
-        });
+        });*/
         /*Sensor.getLightID(room, function(error, data) {
             if (data.length == 0)
                 response.send({
@@ -79,7 +78,8 @@ var automationMessage = function(message) {
             }
         });*/
     } else if (action == "update_light") {
-        Sensor.getLightID(room, function(error, data) {
+        console.log(data);
+        /*Sensor.getLightID(room, function(error, data) {
             if (data.length == 0)
                 response.send({
                     action: false,
@@ -92,7 +92,8 @@ var automationMessage = function(message) {
                     msg: "Acción realizada"
                 });
             }
-        });
+        });*/
+        console.log(data);
     } else if (action == "get_lock") {
         /*Sensor.getLockState(room, function(error, data) {
             if (data.length == 0)
