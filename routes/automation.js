@@ -13,7 +13,7 @@ module.exports = function(app) {
             value: lumen,
             room: room
         };
-        IoT.sendC2Dmessage(1, toRaspData, res);
+        IoT.sendC2Dmessage(toRaspData, res);
     });
 
     app.post("/sensors/get_light", function(req, res) {
@@ -21,10 +21,9 @@ module.exports = function(app) {
         var lumen = req.body.lumen;
         var toRaspData = {
             action: 'get_light',
-            value: lumen,
             room: room
         };
-        IoT.sendC2Dmessage(1, toRaspData, res);
+        IoT.sendC2Dmessage(toRaspData, res);
     });
 
     // Lock logic
@@ -36,7 +35,7 @@ module.exports = function(app) {
             value: lock_state,
             room: room
         };
-        IoT.sendC2Dmessage(1, toRaspData, res);
+        IoT.sendC2Dmessage(toRaspData, res);
 
     });
     app.post("/sensors/get_lock", function(req, res) {
@@ -45,7 +44,7 @@ module.exports = function(app) {
             action: 'get_lock',
             room: room
         };
-        IoT.sendC2Dmessage(1, toRaspData, res);
+        IoT.sendC2Dmessage(toRaspData, res);
     });
 
     // Access logic
@@ -55,77 +54,30 @@ module.exports = function(app) {
             action: 'get_access',
             room: room
         };
-        IoT.sendC2Dmessage(1, toRaspData, res);
+        IoT.sendC2Dmessage(toRaspData, res);
 
 
-        Sensor.getAccessState(room, function(error, data) {
-            if (data.length == 0)
-                res.send({
-                    action: false,
-                    msg: "Cuarto incorrecto"
-                });
-            else {
-                res.send({
-                    action: true,
-                    states: JSON.stringify(data),
-                    msg: "Acción realizada"
-                });
-            }
-        });
+
     });
 
     // Air logic
     app.post("/sensors/update_air", function(req, res) {
         var intensity = req.body.intensity;
-        var temperature = req.body.temperature;
         var room = req.body.room;
         var toRaspData = {
-            action: 'get_light',
+            action: 'update_air',
+            value: intensity,
             room: room
         };
-        IoT.sendC2Dmessage(1, toRaspData, res);
-
-        // Send C2D message looking for curretn temperature
-
-        Sensor.getAirID(room, function(error, data) {
-            if (data.length == 0)
-                res.send({
-                    action: false,
-                    msg: "Cuarto incorrecto"
-                });
-            else {
-                Sensor.updateAirData(data[0].id, temperature, intensity, function(error, data) {});
-
-                var toRaspData = {
-                    action: 'update_air',
-                    value: intensity
-                };
-
-                sendC2Dmessage(toRaspData);
-
-                res.send({
-                    action: true,
-                    msg: "Acción completa"
-                });
-            }
-        });
+        IoT.sendC2Dmessage(toRaspData, res);
     });
     app.post("/sensors/get_air", function(req, res) {
         var room = req.body.room;
-        Sensor.getAirData(room, function(error, data) {
-            if (data.length == 0)
-                res.send({
-                    action: false,
-                    msg: "Cuarto incorrecto"
-                });
-            else {
-                res.send({
-                    action: true,
-                    temperature: data[0].temperatura,
-                    intensity: data[0].intensidad,
-                    msg: "Acción realizada"
-                });
-            }
-        });
+        var toRaspData = {
+            action: 'get_air',
+            room: room
+        };
+        IoT.sendC2Dmessage(toRaspData, res);
+
     });
 }

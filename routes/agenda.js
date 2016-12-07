@@ -1,5 +1,5 @@
 var Event = require('../models/events');
-var IoT = require('../iothub.js');
+var IoT = require('../iothub');
 
 var distance = require('google-distance');
 var moment = require("moment");
@@ -24,18 +24,17 @@ module.exports = function(app) {
                         //",imagen: " + data[i].imagen +
                         " }");
                 }
-
-                res.send({
+                /*res.send({
                     action: true,
                     events: JSON.stringify(events),
                     msg: "Acción realizada"
-                });
+                });*/
 
-                /*var maps_aux;
+                var maps_aux;
                 var directions = [];
                 for (var i = 0; i < data.length; i++) {
                     maps_aux += data[i].ubicacion + "|";
-                    directions.push(data[i].ubicacion);
+                    directions.push(data[i].nombre);
                 }
 
 
@@ -46,22 +45,30 @@ module.exports = function(app) {
                     },
                     function(err, maps_data) {
                         if (err) return console.log(err);
-                        console.log(maps_data);
-                        /*
-						var maps_durations = [];
-						for(var i = 0; i < maps_data.length; i++) {
-							maps_durations.push(parseInt(maps_data[i].duration));
-						}
-						maps_durations.sort(function(a,b) { return a - b; });
-						
-                        res.send({
-                            action: true,
-                            //dishes : JSON.parse(maps_durations),
-                            dishes: "JSON.parse(maps_durations)",
-                            msg: "Acción realizada"
-                        });
-                    });*/
+
+                        var maps_durations = [];
+                        for (var i = 0; i < maps_data.length; i++) {
+                            maps_durations.push(parseInt(maps_data[i].duration));
+                        }
+
+                        var events = "Tiempo de recorrido partiendo del hotel" + "\n\n";
+
+                        for (var i = 0; i < maps_durations.length; i++) {
+                            events += "Hotel a " + directions[i] + " = " + maps_durations[i] + " min en auto, aprox.\n";
+                        }
+                        var toRaspData = {
+                            action: 'events',
+                            value: events
+                        };
+                        IoT.sendC2Dmessage(toRaspData, res);
+                    });
+                res.send({
+                    action: true,
+                    events: JSON.stringify(events),
+                    msg: "Acción realizada"
+                });
             }
         });
     });
+
 }

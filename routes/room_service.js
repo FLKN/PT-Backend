@@ -1,5 +1,7 @@
 var Dish = require('../models/dishes');
 var moment = require("moment");
+var IoT = require('../iothub');
+
 
 module.exports = function(app) {
     app.post("/dishes/get_dishes", function(req, res) {
@@ -20,11 +22,19 @@ module.exports = function(app) {
                         " }");
                 }
 
+                var dishes_rasp = "Lista de platillos disponibles\n\n";
+                for (var i = 0; i < data.length; i++) {
+                    dishes_rasp += "Nombre: " + data[i].nombre + " Descripcion: " + data[i].descripcion + " $" + data[i].precio + "MXN \n";
+                }
+                var toRaspData = {
+                    action: 'dishes',
+                    value: dishes_rasp
+                };
+                IoT.sendC2Dmessage(toRaspData, res);
+
                 res.send({
                     action: true,
                     dishes: JSON.stringify(dishes),
-
-
                     msg: "Acción realizada"
                 });
             }

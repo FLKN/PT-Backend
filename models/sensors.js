@@ -10,7 +10,7 @@ var mysql = require('mysql'),
 var sensorsModel = {};
 //Modelos para Luces
 sensorsModel.updateLightLumen = function(id, lumen, callback) {
-    var sql = "UPDATE sensor_luzs SET lumen = " + connection.escape(lumen) + " WHERE id_sensor = " + connection.escape(id);
+    var sql = "UPDATE sensor_luzs SET preset = " + connection.escape(lumen) + " WHERE id_sensor = " + connection.escape(id);
     if (connection) {
         connection.query(sql, function(error, rows) {
             if (error) { throw error; } else { callback(null, rows); }
@@ -143,11 +143,10 @@ sensorsModel.getAirID = function(room, callback) {
         });
     }
 }
-sensorsModel.updateAirData = function(id, temperature, intensity, callback) {
+sensorsModel.updateAirData = function(id, intensity, callback) {
     var sql =
         "UPDATE sensor_ventilacions " +
-        "SET temperatura = " + connection.escape(temperature) + ", " +
-        "intensidad = " + connection.escape(intensity) +
+        "SET intensidad = " + connection.escape(intensity) +
         " WHERE id_sensor = " + connection.escape(id);
     if (connection) {
         connection.query(sql, function(error, rows) {
@@ -155,5 +154,15 @@ sensorsModel.updateAirData = function(id, temperature, intensity, callback) {
         });
     }
 }
-
+sensorsModel.updateAirTempData = function(id, temperature, callback) {
+    var sql =
+        "UPDATE sensor_ventilacions " +
+        "SET temperatura = " + connection.escape(temperature) +
+        " WHERE id_sensor = " + connection.escape(id);
+    if (connection) {
+        connection.query(sql, function(error, rows) {
+            if (error) { throw error; } else { callback(null, rows); }
+        });
+    }
+}
 module.exports = sensorsModel;
