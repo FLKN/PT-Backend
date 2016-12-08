@@ -8,12 +8,24 @@ module.exports = function(app) {
     app.post("/sensors/update_light", function(req, res) {
         var lumen = req.body.lumen;
         var room = req.body.room;
-        var toRaspData = {
-            action: 'update_light',
-            value: lumen,
-            room: room
-        };
-        IoT.sendC2Dmessage(toRaspData, res);
+
+        Sensor.getLightID(room, function(error, data) {
+            if (data.length == 0)
+                response.send({
+                    action: false,
+                    msg: "Cuarto incorrecto"
+                });
+            else {
+                var toRaspData = {
+                    action: 'update_light',
+                    value: lumen,
+                    id_sensor: data[0].id,
+                    room: room
+                };
+                IoT.sendC2Dmessage(toRaspData, res);
+            }
+        });
+
     });
 
     app.post("/sensors/get_light", function(req, res) {
@@ -40,11 +52,25 @@ module.exports = function(app) {
     });
     app.post("/sensors/get_lock", function(req, res) {
         var room = req.body.room;
-        var toRaspData = {
-            action: 'get_lock',
-            room: room
-        };
-        IoT.sendC2Dmessage(toRaspData, res);
+        Sensor.getLockState(room, function(error, data) {
+            if (data.length == 0)
+                res.send({
+                    action: false,
+                    msg: "Cuarto incorrecto"
+                });
+            else {
+                if (data[0].estado_cerradura == 1)
+                    var msg = "Puerta Abierta";
+                else
+                    var msg = "Puerta Cerrada";
+
+                res.send({
+                    action: true,
+                    lock_state: data[0].estado_cerradura,
+                    msg: msg
+                });
+            }
+        });
     });
 
     // Access logic
@@ -55,9 +81,14 @@ module.exports = function(app) {
             room: room
         };
         IoT.sendC2Dmessage(toRaspData, res);
-
-
-
+    });
+    app.post("/sensors/get_precense", function(req, res) {
+        var room = req.body.room;
+        var toRaspData = {
+            action: 'get_precense',
+            room: room
+        };
+        IoT.sendC2Dmessage(toRaspData, res);
     });
 
     // Air logic

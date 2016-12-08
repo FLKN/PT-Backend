@@ -165,4 +165,15 @@ sensorsModel.updateAirTempData = function(id, temperature, callback) {
         });
     }
 }
+sensorsModel.updateStatics = function(id_sensor, time, energy, callback) {
+    var sql =
+        "UPDATE estadisticas " +
+        "SET t_uso = " + connection.escape(time) +
+        "WHERE id_sensor = " + connection.escape(id_sensor);
+    if (connection) {
+        connection.query(sql, function(error, rows) {
+            if (error) { throw error; } else { callback(null, rows); }
+        });
+    }
+}
 module.exports = sensorsModel;

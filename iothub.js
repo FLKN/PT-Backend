@@ -45,39 +45,41 @@ var automationMessage = function(message) {
 
     var action = data[0];
     var room = data[1];
-    var value = data[2];
+    var id_sensor = data[2]
+    var value = data[3];
+
 
     if (action == "get_light") {
         console.log(data);
 
-        var lumen = parseInt(value);
+        var lumen = parseInt(value); // 1 a 10
 
-        Sensor.getLightID(room, function(error, data) {
-            if (data.length == 0)
-                response.send({
-                    action: false,
-                    msg: "Cuarto incorrecto"
-                });
-            else {
-                Sensor.updateLightLumen(data[0].id, lumen, function(error, data) {});
-            }
-        });
+        /* Sensor.getLightID(room, function(error, data) {
+             if (data.length == 0)
+                 response.send({
+                     action: false,
+                     msg: "Cuarto incorrecto"
+                 });
+             else {
+                 Sensor.updateLightLumen(data[0].id, lumen, function(error, data) {});
+             }
+         });
 
-        Sensor.getLightLumen(room, function(error, data) {
-            if (data.length == 0)
-                response.send({
-                    action: false,
-                    msg: "Cuarto incorrecto"
-                });
-            else {
-                response.send({
-                    action: true,
-                    preset: data[0].preset,
-                    lumen: data[0].lumen,
-                    msg: "Acción realizada"
-                });
-            }
-        });
+         Sensor.getLightLumen(room, function(error, data) {
+             if (data.length == 0)
+                 response.send({
+                     action: false,
+                     msg: "Cuarto incorrecto"
+                 });
+             else {
+                 response.send({
+                     action: true,
+                     preset: data[0].preset,
+                     lumen: data[0].lumen,
+                     msg: "Acción realizada"
+                 });
+             }
+         });*/
     } else if (action == "update_light") {
         console.log(data);
         if (value == 'a')
@@ -103,27 +105,6 @@ var automationMessage = function(message) {
                 });
             }
         });
-    } else if (action == "get_lock") {
-        console.log(data);
-        Sensor.getLockID(room, function(error, data) {
-            if (data.length == 0)
-                response.send({
-                    action: false,
-                    msg: "Cuarto incorrecto"
-                });
-            else {
-                Sensor.updateLockState(data[0].id, lock_state, function(error, data) {});
-
-                if (lock_state == 1)
-                    var msg = "Puerta Abierta";
-                else
-                    var msg = "Puerta Cerrada";
-                response.send({
-                    action: true,
-                    msg: msg
-                });
-            }
-        });
     } else if (action == "update_lock") {
         console.log(data);
         var state = (value == 'g') ? 1 : 0
@@ -135,9 +116,9 @@ var automationMessage = function(message) {
                     msg: "Cuarto incorrecto"
                 });
             else {
-                Sensor.updateLockState(data[0].id, statetate, function(error, data) {});
+                Sensor.updateLockState(data[0].id, state, function(error, data) {});
 
-                if (lock_state == 1)
+                if (state == 1)
                     var msg = "Puerta Abierta";
                 else
                     var msg = "Puerta Cerrada";
@@ -148,18 +129,30 @@ var automationMessage = function(message) {
             }
         });
     } else if (action == "get_access") {
-        if (value == '00000')
+        console.log(data);
+        /*00001 Todo cerrado 00002 Puerta abierta 00003 Ventana abierta 00004 todo abierto */
+        var access = parseInt(value);
+        if (value == '00001')
             var precense = 0;
-        else if (value == '00001')
+        else if (value == '00002')
+            var precense = 1;
+        else if (value == '00003')
+            var precense = 1;
+        else if (value == '00004')
             var precense = 1;
         else
             var precense = 9;
+
+        // Sensor.updateaccess();
+
 
         res.send({
             action: true,
             states: precense,
             msg: "Acción realizada"
         });
+    } else if (action == "get_precense") {
+        console.log(data);
     } else if (action == "get_air") {
         console.log(data);
 
@@ -223,6 +216,11 @@ var automationMessage = function(message) {
                 });
             }
         });
+    } else if (action == "timer") {
+        var statics = value.split(",");
+        var time = statics[0];
+        var energy = statics[1] * 46;
+        Sensor.updateStatics(id_sensor, time, energy, function(error, data) {});
     }
 
 
