@@ -28,6 +28,8 @@ module.exports = function(app) {
                 }
                 var toRaspData = {
                     action: 'dishes',
+                    room: 1,
+                    id_sensor: 0,
                     value: dishes_rasp
                 };
                 IoT.sendC2Dmessage(toRaspData, res);
