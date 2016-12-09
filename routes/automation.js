@@ -43,9 +43,11 @@ module.exports = function(app) {
     app.post("/sensors/update_lock", function(req, res) {
         var lock_state = req.body.lock_state;
         var room = req.body.room;
+        var power = req.body.power;
         var toRaspData = {
             action: 'update_lock',
             value: lock_state,
+            power: power,
             room: room
         };
         IoT.sendC2Dmessage(toRaspData, res);
@@ -96,9 +98,11 @@ module.exports = function(app) {
     app.post("/sensors/update_air", function(req, res) {
         var intensity = req.body.intensity;
         var room = req.body.room;
+        var power = req.body.power;
         var toRaspData = {
             action: 'update_air',
             value: intensity,
+            power: power,
             room: room
         };
         IoT.sendC2Dmessage(toRaspData, res);
