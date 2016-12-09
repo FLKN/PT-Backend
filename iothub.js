@@ -45,9 +45,8 @@ var automationMessage = function(message) {
 
     var action = data[0];
     var room = data[1];
-    var id_sensor = data[2]
-    var value = data[3];
-
+    var value = data[2];
+    var id_sensor = data[3];
 
     if (action == "get_light") {
         console.log(data);
