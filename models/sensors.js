@@ -168,7 +168,8 @@ sensorsModel.updateAirTempData = function(id, temperature, callback) {
 sensorsModel.updateStatics = function(id_sensor, time, energy, callback) {
     var sql =
         "UPDATE estadisticas " +
-        "SET t_uso = " + connection.escape(time) +
+        "SET t_uso = " + connection.escape(time) + "," +
+        "energia_cons = " + connection.escape(energy) +
         "WHERE id_sensor = " + connection.escape(id_sensor);
     if (connection) {
         connection.query(sql, function(error, rows) {

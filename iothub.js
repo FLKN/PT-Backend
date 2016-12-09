@@ -216,9 +216,8 @@ var automationMessage = function(message) {
             }
         });
     } else if (action == "timer") {
-        var statics = value.split(",");
-        var time = statics[0];
-        var energy = statics[1] * 46;
+        var time = value;
+        var energy = time * 46;
         Sensor.updateStatics(id_sensor, time, energy, function(error, data) {});
     }
 

@@ -8,6 +8,7 @@ module.exports = function(app) {
     app.post("/sensors/update_light", function(req, res) {
         var lumen = req.body.lumen;
         var room = req.body.room;
+        var power = req.body.power;
 
         Sensor.getLightID(room, function(error, data) {
             if (data.length == 0)
@@ -20,6 +21,7 @@ module.exports = function(app) {
                     action: 'update_light',
                     value: lumen,
                     id_sensor: data[0].id,
+                    power: power,
                     room: room
                 };
                 IoT.sendC2Dmessage(toRaspData, res);
@@ -27,7 +29,6 @@ module.exports = function(app) {
         });
 
     });
-
     app.post("/sensors/get_light", function(req, res) {
         var room = req.body.room;
         var lumen = req.body.lumen;
