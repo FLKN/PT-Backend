@@ -41,44 +41,113 @@ var automationMessage = function(message) {
     var msg = JSON.stringify(decodeURIComponent(escape(message.body)));
     var data = msg.substring(1, msg.length - 1).split(",");
 
-
-
     var action = data[0];
     var room = data[1];
     var value = data[2];
     var id_sensor = data[3];
 
     if (action == "get_light") {
-        console.log(data);
 
-        var lumen = parseInt(value); // 1 a 10
+        if (value == -1) {
+            Sensor.getLightLumen(room, function(error, data) {
+                if (data.length == 0)
+                    response.send({
+                        action: false,
+                        msg: "Cuarto incorrecto"
+                    });
+                else {
+                    response.send({
+                        action: true,
+                        preset: data[0].preset,
+                        lumen: data[0].lumen,
+                        msg: "Acción realizada"
+                    });
+                }
+            });
+        } else {
+            var lumen = parseInt(value); // 1 a 10
 
-        /* Sensor.getLightID(room, function(error, data) {
-             if (data.length == 0)
-                 response.send({
-                     action: false,
-                     msg: "Cuarto incorrecto"
-                 });
-             else {
-                 Sensor.updateLightLumen(data[0].id, lumen, function(error, data) {});
-             }
-         });
+            Sensor.getLightID(room, function(error, data) {
+                if (data.length == 0)
+                    response.send({
+                        action: false,
+                        msg: "Cuarto incorrecto"
+                    });
+                else {
+                    Sensor.updateLightLumen(data[0].id, lumen, function(error, data) {});
+                }
+            });
 
-         Sensor.getLightLumen(room, function(error, data) {
-             if (data.length == 0)
-                 response.send({
-                     action: false,
-                     msg: "Cuarto incorrecto"
-                 });
-             else {
-                 response.send({
-                     action: true,
-                     preset: data[0].preset,
-                     lumen: data[0].lumen,
-                     msg: "Acción realizada"
-                 });
-             }
-         });*/
+            Sensor.getLightLumen(room, function(error, data) {
+                if (data.length == 0)
+                    response.send({
+                        action: false,
+                        msg: "Cuarto incorrecto"
+                    });
+                else {
+                    response.send({
+                        action: true,
+                        preset: data[0].preset,
+                        lumen: data[0].lumen,
+                        msg: "Acción realizada"
+                    });
+                }
+            });
+        }
+    } else if (action == "get_air") {
+        if (value == -1) {
+            Sensor.getAirData(room, function(error, data) {
+                if (data.length == 0)
+                    response.send({
+                        action: false,
+                        msg: "Cuarto incorrecto"
+                    });
+                else {
+                    response.send({
+                        action: true,
+                        temperature: data[0].temperatura,
+                        intensity: data[0].intensidad,
+                        msg: "Acción realizada"
+                    });
+                }
+            });
+        } else {
+            var temperature = parseFloat(value);
+
+            Sensor.getAirID(room, function(error, data) {
+                if (data.length == 0)
+                    res.send({
+                        action: false,
+                        msg: "Cuarto incorrecto"
+                    });
+                else {
+                    Sensor.updateAirTempData(data[0].id, temperature, function(error, data) {});
+
+                    res.send({
+                        action: true,
+                        msg: "Acción completa"
+                    });
+                }
+            });
+
+            Sensor.getAirData(room, function(error, data) {
+                if (data.length == 0)
+                    res.send({
+                        action: false,
+                        msg: "Cuarto incorrecto"
+                    });
+                else {
+                    res.send({
+                        action: true,
+                        temperature: data[0].temperatura,
+                        intensity: data[0].intensidad,
+                        msg: "Acción realizada"
+                    });
+                }
+            });
+
+
+        }
     } else if (action == "update_light") {
         console.log(data);
         if (value == 'a')
@@ -129,65 +198,55 @@ var automationMessage = function(message) {
         });
     } else if (action == "get_access") {
         console.log(data);
-        /*00001 Todo cerrado 00002 Puerta abierta 00003 Ventana abierta 00004 todo abierto */
-        var access = parseInt(value);
-        if (value == '00001')
-            var precense = 0;
-        else if (value == '00002')
-            var precense = 1;
-        else if (value == '00003')
-            var precense = 1;
-        else if (value == '00004')
-            var precense = 1;
-        else
-            var precense = 9;
+        if (value == -1) {
+            Sensor.getAccessState(room, function(error, data) {
+                if (data.length == 0)
+                    response.send({
+                        action: false,
+                        msg: "Cuarto incorrecto"
+                    });
+                else {
+                    var aux;
+                    if (data[0].estado == 0 && data[1].estado == 0)
+                        aux = 0
+                    else if (data[0].estado == 0 && data[1].estado == 1)
+                        aux = 1
+                    else if (data[0].estado == 1 && data[1].estado == 0)
+                        aux = 2
+                    else if (data[0].estado == 1 && data[1].estado == 1)
+                        aux = 3
 
-        // Sensor.updateaccess();
+                    response.send({
+                        action: true,
+                        as: aux,
+                        msg: "Acción realizada"
+                    });
+                }
+            });
+        } else {
+
+            /*00001 Todo cerrado 00002 Puerta abierta 00003 Ventana abierta 00004 todo abierto */
+            var access = parseInt(value);
+            if (value == '00001')
+                var precense = 0;
+            else if (value == '00002')
+                var precense = 1;
+            else if (value == '00003')
+                var precense = 1;
+            else if (value == '00004')
+                var precense = 1;
+            else
+                var precense = 9;
+
+            response.send({
+                action: true,
+                states: precense,
+                msg: "Acción realizada"
+            });
+
+        }
 
 
-        res.send({
-            action: true,
-            states: precense,
-            msg: "Acción realizada"
-        });
-    } else if (action == "get_precense") {
-        console.log(data);
-    } else if (action == "get_air") {
-        console.log(data);
-
-        var temperature = parseFloat(value);
-
-        Sensor.getAirID(room, function(error, data) {
-            if (data.length == 0)
-                res.send({
-                    action: false,
-                    msg: "Cuarto incorrecto"
-                });
-            else {
-                Sensor.updateAirTempData(data[0].id, temperature, function(error, data) {});
-
-                res.send({
-                    action: true,
-                    msg: "Acción completa"
-                });
-            }
-        });
-
-        Sensor.getAirData(room, function(error, data) {
-            if (data.length == 0)
-                res.send({
-                    action: false,
-                    msg: "Cuarto incorrecto"
-                });
-            else {
-                res.send({
-                    action: true,
-                    temperature: data[0].temperatura,
-                    intensity: data[0].intensidad,
-                    msg: "Acción realizada"
-                });
-            }
-        });
 
     } else if (action == "update_air") {
         console.log(value);

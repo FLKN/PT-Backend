@@ -83,7 +83,7 @@ sensorsModel.updateLockState = function(id, lock_state, callback) {
 //Modelos para Acceso
 sensorsModel.getAccessState = function(room, callback) {
     var sql =
-        "SELECT sensor_accesos.estado_magnetico " +
+        "SELECT sensor_accesos.estado " +
         "FROM sensor_accesos " +
         "INNER JOIN sensors " +
         "ON sensors.id = sensor_accesos.id_sensor " +

@@ -85,14 +85,7 @@ module.exports = function(app) {
         };
         IoT.sendC2Dmessage(toRaspData, res);
     });
-    app.post("/sensors/get_precense", function(req, res) {
-        var room = req.body.room;
-        var toRaspData = {
-            action: 'get_precense',
-            room: room
-        };
-        IoT.sendC2Dmessage(toRaspData, res);
-    });
+
 
     // Air logic
     app.post("/sensors/update_air", function(req, res) {
